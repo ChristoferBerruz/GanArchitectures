@@ -1,11 +1,12 @@
 from os import path
+from torch.utils import tensorboard
+from configs import ModelConfig
 
 class Logger(object):
-    log_dir = "../Logs/"
 
     def __init__(self, experiment_name):
         """Create a summary writer logger"""
-        dir = path.join(log_dir, experiment_name)
+        dir = path.join(ModelConfig.checkpoint_dir, experiment_name, "Logs")
         self.writer = tensorboard.SummaryWriter(dir)
 
     def log_loss(self, tag, loss, iter):
