@@ -1,29 +1,15 @@
 from .visiondata import VisionData
+from oop.patterns import Singleton
 from configs import ModelConfig
 from torch.utils.data import Dataset
 import torch
 import torchvision
 import torchvision.transforms as transforms
 
-class DataRepository(object):
+class DataRepository(metaclass=Singleton):
     """
     DataRepository is a singleton in charge of dispatching vision data
     """
-    _instance = None
-
-    def __init__(self):
-        if DataRepository._instance != None:
-            raise Exception("DataRepository is a singleton")
-
-        DataRepository._instance = self
-
-    @staticmethod
-    def get_instance():
-        
-        if DataRepository._instance == None:
-            DataRepository()
-
-        return DataRepository._instance
 
     def get_data(self, name:str, batch_size:int, channels:int):
         train, train_loader, test, test_loader = self._get_loader(name, "../VisionData", batch_size, channels)
