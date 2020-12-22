@@ -58,10 +58,11 @@ class Gan(ABC):
         image_name = "generator_iter_{}.png".format(str(generator_iter).zfill(3))
         image_path = os.path.join(folder_name, image_name)
         utils.save_image(grid, image_path)
-        self.save_model(folder_name)
+        self.save_model()
 
 
-    def save_model(self, folder_name):
+    def save_model(self):
+        folder_name = os.path.join(ModelConfig.checkpoint_dir, self.ID)
         generator_file = "G.pkl"
         discriminator_file = "D.pkl"
         discriminator_path = os.path.join(folder_name, discriminator_file)
@@ -69,8 +70,16 @@ class Gan(ABC):
         torch.save(self.D.state_dict(), discriminator_path)
         torch.save(self.G.state_dict(), generator_path)
         print("Models saved to {} and {}".format(discriminator_path, generator_path))
+    
+    def load_model(self):
+        folder_name = os.path.join(ModelConfig.checkpoint_dir, self.ID)
+        discriminator_path = os.path.join(folder_name, "D.pkl")
+        generator_path = os.path.join(folder_name, "G.pkl")
+        self.D.load_state_dict(torch.load(discriminator_path))
+        self.G.load_state_dict(torch.load(generator_path))
+        print("Sucessfully loaded models from checkpoint")
 
-    def train(self, data:VisionData, epochs:int):
+    def train(self, data:VisionData, epochs:int, resume_training:bool=True):
 
         self.to = time()
         generator_iter = 0
@@ -78,6 +87,14 @@ class Gan(ABC):
         expected_batch_size = data.batch_size
         self.ID = self.name + data.name
         self.logger = Logger(self.ID)
+
+        if resume_training:
+            try:
+                self.load_model()
+            except Exception:
+                print("Failed to load model. Training from scratch")
+        else:
+            print("Training from scratch")
 
         for epoch in range(epochs):
             for i, (images, _) in enumerate(train_loader):
@@ -133,3 +150,14 @@ class Gan(ABC):
                 generator_iter += 1
                 if generator_iter % 10 == 0:
                     self.save_checkpoint(epoch, generator_iter, expected_batch_size)
+
+                if ((i+1)%100) == 0:
+                    print("Epoch: {:2d}, batch_number/all_batches: {:d}/{:d}, D_loss: {:.8f}, G_loss : {:.8f}".format(
+                        epoch+1, i+1, train_loader.dataset.__len__()//expected_batch_size, d_loss.data, g_loss.data))
+                    self.logger.log_loss('Loss/Discriminator', d_loss.data, generator_iter)
+                    self.logger.log_loss('Loss/Generator', g_loss.data, generator_iter)
+
+        t = time() - self.to
+        self.logger.close()
+        print("Total training time: {}".format(t))
+        self.save_model()
