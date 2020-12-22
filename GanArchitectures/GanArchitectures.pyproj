@@ -21,6 +21,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="factory.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="models\basemodels.py" />
     <Compile Include="main.py" />
     <Compile Include="configs.py">
@@ -30,6 +33,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="models\ganbase.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="oop\patterns.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="utils\logger.py">
@@ -44,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="models\" />
+    <Folder Include="oop\" />
     <Folder Include="utils\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

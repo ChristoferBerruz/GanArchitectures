@@ -1,9 +1,6 @@
-from .basemodels import DenseDiscriminator, DenseGenerator
 from utils.visiondata import VisionData
 from configs import ModelConfig
 from utils.logger import Logger
-import torch.optim as optim
-import torch.nn as nn
 import torch
 from torchvision import utils
 from torch.autograd import Variable

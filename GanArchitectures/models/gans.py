@@ -25,7 +25,7 @@ class MLPGan(Gan):
         return images.view(batch_size, -1)
 
     def get_z_for_model(self, batch_size, latent_space, device):
-        return torch.rand(batch_size, latent_space, device=device)
+        return torch.randn(batch_size, latent_space, device=device)
 
     def get_labels(self, batch_size, device):
         real_labels = Variable(torch.ones(batch_size, device=device))
@@ -34,6 +34,7 @@ class MLPGan(Gan):
 
     def reshape_samples(self, samples):
         return samples.view(samples.size(0), 1, self.image_space, self.image_space)
+
 
 class DCGan(Gan):
     """Deconvolutional Gan"""
@@ -52,7 +53,7 @@ class DCGan(Gan):
         self.g_optimizer = torch.optim.Adam(self.G.parameters(), lr=lr, betas=betas)
 
     def get_z_for_model(self, batch_size, latent_space, device):
-        return torch.rand(batch_size, latent_space, 1, 1, device=device)
+        return torch.randn(batch_size, latent_space, 1, 1, device=device)
 
     def modify_images_to_model(self, images, batch_size):
         return images
