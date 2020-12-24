@@ -81,6 +81,8 @@ class Gan(ABC):
         generator_iter = 0
         train_loader = data.train_loader
         expected_batch_size = data.batch_size
+        self.G = self.G.to(self.device)
+        self.D = self.D.to(self.device)
 
         if resume_training:
             try:
@@ -142,7 +144,7 @@ class Gan(ABC):
                 g_loss.backward()
                 self.g_optimizer.step()
                 generator_iter += 1
-                if generator_iter % 10 == 0:
+                if generator_iter % 1000 == 0:
                     self.save_checkpoint(epoch, generator_iter, expected_batch_size)
 
                 if ((i+1)%100) == 0:
