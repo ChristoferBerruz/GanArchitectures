@@ -1,5 +1,7 @@
 from .ganbase import Gan
 from .basemodels import DConvGenerator, ConvDiscriminator, DenseGenerator, DenseDiscriminator
+from utils.visiondata import VisionData
+from utils.logger import Logger
 from configs import ModelConfig
 import torch.nn as nn
 import torch
@@ -7,7 +9,8 @@ from torch.autograd import Variable
 
 class MLPGan(Gan):
 
-    def __init__(self, channels:int):
+    def __init__(self, data:VisionData):
+        channels = data.channels
         self.latent_space = ModelConfig.latent_space
         self.image_space = ModelConfig.image_space
         self.G = DenseGenerator(channels, self.latent_space, self.image_space, nn.Tanh())
@@ -15,6 +18,8 @@ class MLPGan(Gan):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.loss = nn.BCELoss()
         self.name = "MLPGAN"
+        self.ID = self.name + data.name
+        self.logger = Logger(self.ID)
         lr = 0.0002
         weight_decay = 0.00001
         self.d_optimizer = torch.optim.Adam(self.D.parameters(), lr=lr, weight_decay=weight_decay)
@@ -39,7 +44,8 @@ class MLPGan(Gan):
 class DCGan(Gan):
     """Deconvolutional Gan"""
 
-    def __init__(self, channels):
+    def __init__(self, data:VisionData):
+        channels = data.channels
         self.latent_space = ModelConfig.latent_space
         self.image_space = ModelConfig.image_space
         self.G = DConvGenerator(channels, self.latent_space, self.image_space, nn.Tanh())
@@ -47,6 +53,8 @@ class DCGan(Gan):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.loss = nn.BCELoss()
         self.name = "DCGAN"
+        self.ID = self.name + data.name
+        self.logger = Logger(self.ID)
         lr = 0.0002
         betas = (0.5, 0.999)
         self.d_optimizer = torch.optim.Adam(self.D.parameters(), lr=lr, betas=betas)

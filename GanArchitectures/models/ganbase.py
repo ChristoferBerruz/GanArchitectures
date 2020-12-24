@@ -1,6 +1,5 @@
 from utils.visiondata import VisionData
 from configs import ModelConfig
-from utils.logger import Logger
 import torch
 from torchvision import utils
 from torch.autograd import Variable
@@ -14,7 +13,7 @@ class Gan(ABC):
     """
 
     @abstractmethod
-    def __init__(self, channels:int):
+    def __init__(self, data:VisionData):
         pass
 
     @abstractmethod
@@ -78,12 +77,10 @@ class Gan(ABC):
 
     def train(self, data:VisionData, epochs:int, resume_training:bool=True):
 
-        self.to = time()
+        to = time()
         generator_iter = 0
         train_loader = data.train_loader
         expected_batch_size = data.batch_size
-        self.ID = self.name + data.name
-        self.logger = Logger(self.ID)
 
         if resume_training:
             try:
@@ -154,7 +151,7 @@ class Gan(ABC):
                     self.logger.log_loss('Loss/Discriminator', d_loss.data, generator_iter)
                     self.logger.log_loss('Loss/Generator', g_loss.data, generator_iter)
 
-        t = time() - self.to
+        t = time() - to
         self.logger.close()
         print("Total training time: {}".format(t))
         self.save_model()
