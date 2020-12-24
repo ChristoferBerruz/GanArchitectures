@@ -34,7 +34,7 @@ class MLPGan(Gan):
 
     def get_labels(self, batch_size, device):
         real_labels = Variable(torch.ones(batch_size, device=device))
-        fake_labels = Variable(torch.ones(batch_size, device=device))
+        fake_labels = Variable(torch.zeros(batch_size, device=device))
         return (real_labels, fake_labels)
 
     def reshape_samples(self, samples):
@@ -71,5 +71,5 @@ class DCGan(Gan):
 
     def get_labels(self, batch_size, device):
         real_labels = Variable(torch.ones(batch_size, device=device))
-        fake_labels = Variable(torch.ones(batch_size, device=device))
+        fake_labels = Variable(torch.zeros(batch_size, device=device))
         return (real_labels, fake_labels)
