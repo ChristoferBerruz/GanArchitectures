@@ -1,5 +1,5 @@
 from oop.patterns import Singleton
-from models.gans import MLPGan, DCGan, WGanCP
+from models.gans import MLPGan, DCGan, WGanCP, WGanGP
 from utils.datarepository import DataRepository
 
 class ModelFactory(metaclass=Singleton):
@@ -34,6 +34,8 @@ class ModelFactory(metaclass=Singleton):
             model = DCGan(visiondata)
         if gan_model == "WGANCP":
             model = WGanCP(visiondata)
+        if gan_model == "WGANGP":
+            model = WGanGP(visiondata)
 
         if model == None:
             raise Exception("Model is not available.")

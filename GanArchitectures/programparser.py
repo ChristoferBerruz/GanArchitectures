@@ -6,7 +6,7 @@ def get_parser() -> argparse.ArgumentParser:
     """
     parser = argparse.ArgumentParser(description="Python implementation of multiple GAN models")
 
-    parser.add_argument('--model', type=str, default='DCGAN', choices=['MLPGAN', 'DCGAN', 'WGANCP'])
+    parser.add_argument('--model', type=str, default='DCGAN', choices=['MLPGAN', 'DCGAN', 'WGANCP', 'WGANGP'])
     parser.add_argument('--dataset', type=str, default='CIFAR10', choices=['CIFAR10', 'MNIST', 'FASHION_MNIST'])
     parser.add_argument('--epochs', type=int, default=50, help='The number of epochs to run')
     parser.add_argument('--batch_size', type=int, default=64, help='The size of the batch')
