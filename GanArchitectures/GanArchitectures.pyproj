@@ -38,6 +38,9 @@
     <Compile Include="oop\patterns.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="programparser.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="utils\logger.py">
       <SubType>Code</SubType>
     </Compile>
