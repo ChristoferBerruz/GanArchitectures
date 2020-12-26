@@ -5,6 +5,7 @@ from utils.logger import Logger
 from configs import ModelConfig
 import torch.nn as nn
 import torch
+from torch import autograd
 from torch.autograd import Variable
 
 class MLPGan(MLPGanAbc):
@@ -69,7 +70,7 @@ class WGanCP(WGanAbc):
         minues_one = -1*one
         return (one, minues_one)
 
-    def gradient_penalty(self, real_images, fake_images):
+    def gradient_penalty(self, real_images, fake_images, batch_size):
         return None
 
 
@@ -98,5 +99,20 @@ class WGanGP(WGanAbc):
         minus_one = -1*one
         return (minus_one, one)
 
-    def gradient_penalty(self, real_images, fake_images):
-        return None
+    def gradient_penalty(self, real_images, fake_images, batch_size):
+        eta = torch.FloatTensor(batch_size, 1, 1, 1).uniform_(0, 1)
+        eta = eta.expand(batch_size, real_images.size(1), real_images.size(2), real_images.size(3))
+        eta = eta.to(self.device)
+
+        interpolated = eta*real_images + ((1-eta)*fake_images)
+        interpolated = interpolated.to(self.device)
+        interpolated = Variable(interpolated, requires_grad=True)
+
+        prob_interpolated = self.D(interpolated)
+
+        gradients = autograd.grad(outputs=prob_interpolated, inputs=interpolated,
+                                  grad_outputs=torch.ones(prob_interpolated.size()).to(self.device),
+                                  create_graph=True, retain_graph=True)[0]
+
+        penalty  = ((gradients.norm(2, dim=1) - 1)**2).mean()*self.lambda_term
+        return penalty

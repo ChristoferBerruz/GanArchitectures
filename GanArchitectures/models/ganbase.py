@@ -206,7 +206,7 @@ class WGanAbc(DCGanAbc, ABC):
                 yield images
 
     @abstractmethod
-    def gradient_penalty(self, real_images, fake_images):
+    def gradient_penalty(self, real_images, fake_images, batch_size):
         pass
 
     @abstractmethod
@@ -267,7 +267,7 @@ class WGanAbc(DCGanAbc, ABC):
                 d_loss_fake = d_loss_fake.mean(0).view(1)
                 d_loss_fake.backward(minus_one)
 
-                grad_penalty = self.gradient_penalty(images, fake_images)
+                grad_penalty = self.gradient_penalty(images, fake_images, expected_batch_size)
                 if grad_penalty != None:
                     grad_penalty.backward()
 
