@@ -73,6 +73,10 @@ class WGanCP(WGanAbc):
     def gradient_penalty(self, real_images, fake_images, batch_size):
         return None
 
+    def clamp(self):
+        for p in self.D.parameters():
+            p.data.clamp_(-self.weight_clipping_limit, self.weight_clipping_limit)
+
 
 class WGanGP(WGanAbc):
 
@@ -88,7 +92,6 @@ class WGanGP(WGanAbc):
         self.logger = Logger(self.ID)
         lr = 1e-4
         betas = (0.5, 0.999)
-        self.weight_clipping_limit = 0.01
         self.d_optimizer = torch.optim.Adam(self.D.parameters(), lr=lr, betas=betas)
         self.g_optimizer = torch.optim.Adam(self.G.parameters(), lr=lr, betas=betas)
         self.critic_iter = 5
@@ -116,3 +119,6 @@ class WGanGP(WGanAbc):
 
         penalty  = ((gradients.norm(2, dim=1) - 1)**2).mean()*self.lambda_term
         return penalty
+
+    def clamp(self):
+        return

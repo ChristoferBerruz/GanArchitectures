@@ -213,6 +213,10 @@ class WGanAbc(DCGanAbc, ABC):
     def one_minus_one(self):
         pass
 
+    @abstractmethod
+    def clamp(self):
+        pass
+
     def train(self, data, epochs, resume_training=True):
         to = time()
         self.D = self.D.to(self.device)
@@ -246,8 +250,7 @@ class WGanAbc(DCGanAbc, ABC):
                 iter_num += 1
                 self.D.zero_grad()
 
-                for p in self.D.parameters():
-                    p.data.clamp_(-self.weight_clipping_limit, self.weight_clipping_limit)
+                self.clamp()
 
                 images = infinite_data.__next__()
                 if (images.size(0) != expected_batch_size):
@@ -267,7 +270,7 @@ class WGanAbc(DCGanAbc, ABC):
                 d_loss_fake = d_loss_fake.mean(0).view(1)
                 d_loss_fake.backward(minus_one)
 
-                grad_penalty = self.gradient_penalty(images, fake_images, expected_batch_size)
+                grad_penalty = self.gradient_penalty(images.data, fake_images.data, expected_batch_size)
                 if grad_penalty != None:
                     grad_penalty.backward()
 
