@@ -152,3 +152,44 @@ class ConvDiscriminator(nn.Module):
         x = self.output_function(x)
         return x
 
+class ConvDiscriminatorInstanceNorm(nn.Module):
+    """
+        Convolutional discriminator that uses InstaceNorm rather than BatchNorm.
+    """
+    def __init__(self, channels:int, image_space:int, output_function:nn.Module,  gpu_cores:int = 0):
+        """Constructor
+        Parameters:
+            channels: number of channels of input image, 3 if color image
+            gpu_cores: number of gpu's available in environment
+            latent_space: size of latent space. Usually 100
+            image_space: a square image of size (image_space)x(image_space)
+            output_function: last activation function of network
+        """
+        
+        super().__init__()
+        self.channels = channels
+        self.gpu_cores = gpu_cores
+
+        self.main_module = nn.Sequential(
+            nn.Conv2d(channels, image_space*8, 4, 2, 1),
+            nn.InstanceNorm2d(image_space*8, affine=True),
+            nn.LeakyReLU(0.2, True),
+
+            nn.Conv2d(image_space*8, image_space*16, 4, 2, 1),
+            nn.InstanceNorm2d(image_space*16, affine=True),
+            nn.LeakyReLU(0.2, True),
+
+            nn.Conv2d(image_space*16, image_space*32, 4, 2, 1),
+            nn.InstanceNorm2d(image_space*32, affine=True),
+            nn.LeakyReLU(0.2, True),
+
+            nn.Conv2d(image_space*32, 1, 4, 1, 0)
+
+        )
+
+        self.output_function = output_function
+
+    def forward(self, x):
+        x = self.main_module(x)
+        x = self.output_function(x)
+        return x
