@@ -1,5 +1,5 @@
 from .ganbase import MLPGanAbc, DCGanAbc, WGanAbc
-from .basemodels import DConvGenerator, ConvDiscriminator, DenseGenerator, DenseDiscriminator, ConvDiscriminatorInstanceNorm
+from .basemodels import DConvGenerator, ConvDiscriminator, DenseGenerator, DenseDiscriminator, ConvDiscriminatorInstanceNorm, ConvDiscriminatorWGan
 from utils.visiondata import VisionData
 from utils.logger import Logger
 from configs import ModelConfig
@@ -54,7 +54,7 @@ class WGanCP(WGanAbc):
         self.latent_space = ModelConfig.latent_space
         self.image_space = ModelConfig.image_space
         self.G = DConvGenerator(channels, self.latent_space, self.image_space, nn.Tanh())
-        self.D = ConvDiscriminator(channels, self.image_space, nn.Identity())
+        self.D = ConvDiscriminatorWGan(channels, self.image_space, nn.Identity())
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.name = "WGANCP"
         self.ID = self.name + data.name
