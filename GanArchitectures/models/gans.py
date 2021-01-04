@@ -67,15 +67,14 @@ class WGanCP(WGanAbc):
 
     def one_minus_one(self):
         one = torch.FloatTensor([1])
-        minues_one = -1*one
-        return (one, minues_one)
+        minus_one = -1*one
+        return (one, minus_one)
 
     def gradient_penalty(self, real_images, fake_images, batch_size):
         return None
 
-    def clamp(self):
-        for p in self.D.parameters():
-            p.data.clamp_(-self.weight_clipping_limit, self.weight_clipping_limit)
+    def should_clamp(self):
+        return True
 
 
 class WGanGP(WGanAbc):
@@ -120,5 +119,5 @@ class WGanGP(WGanAbc):
         penalty  = ((gradients.norm(2, dim=1) - 1)**2).mean()*self.lambda_term
         return penalty
 
-    def clamp(self):
-        return
+    def should_clamp(self):
+        return False

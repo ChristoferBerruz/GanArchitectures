@@ -214,7 +214,7 @@ class WGanAbc(DCGanAbc, ABC):
         pass
 
     @abstractmethod
-    def clamp(self):
+    def should_clamp(self):
         pass
 
     def train(self, data, epochs, resume_training=True):
@@ -250,7 +250,9 @@ class WGanAbc(DCGanAbc, ABC):
                 iter_num += 1
                 self.D.zero_grad()
 
-                self.clamp()
+                if self.should_clamp():
+                    for p in self.D.parameters():
+                        p.data.clamp_(-self.weight_clipping_limit, self.weight_clipping_limit)
 
                 images = infinite_data.__next__()
                 if (images.size(0) != expected_batch_size):
